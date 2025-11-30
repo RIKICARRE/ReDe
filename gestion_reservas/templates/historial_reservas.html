@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Historial de Reservas | ReDe{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Título de la Página -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Historial de Reservas</h1>
+
+    <!-- Sección de Historial de Reservas -->
+    <section class="mb-10">
+        <div class="overflow-x-auto relative">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="py-3 px-6">Espacio</th>
+                        <th scope="col" class="py-3 px-6">Inicio</th>
+                        <th scope="col" class="py-3 px-6">Fin</th>
+                        <th scope="col" class="py-3 px-6">Fecha de creación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="py-4 px-6">{{ reserva.espacio }}</td>
+                        <td class="py-4 px-6">{{ reserva.momento_inicio|date:"d/m/Y H:i" }}</td>
+                        <td class="py-4 px-6">{{ reserva.momento_fin|date:"d/m/Y H:i" }}</td>
+                        <td class="py-4 px-6">{{ reserva.created_at|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td colspan="4" class="py-4 px-6 text-center">No tienes reservas pasadas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

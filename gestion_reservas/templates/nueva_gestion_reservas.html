@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de Reservas | ReDe{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'reservas_estilos.css' %}">
+
+<div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Título de la Página -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Reservas</h1>
+
+    <!-- Sección de Mis Reservas -->
+    <section class="mb-10 relative">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mis Reservas</h2>
+        <div class="flex items-center">
+            <!-- Botón para desplazar hacia la izquierda -->
+            <button id="scroll-left" class="hidden md:block bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 focus:outline-none mr-2 z-10 absolute left-0 transform -translate-y-1/2" style="top: 50%;">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <!-- Contenedor desplazable -->
+            <div id="reservas-container" class="flex space-x-4 overflow-x-auto scroll-smooth scrollbar-hide mx-10">
+                {% for reserva in reservas %}
+                <div class="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex-shrink-0" style="width: 300px;">
+                    <img class="w-full h-48 object-cover rounded-t-lg" src="{% static 'images/'|add:reserva.espacio|lower|add:'.jpg' %}" alt="{{ reserva.espacio }}" />
+                    <div class="p-5">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ reserva.espacio }}</h5>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <strong>Fecha:</strong> {{ reserva.momento_inicio|date:"d/m/Y" }}<br>
+                            <strong>Hora:</strong> {{ reserva.momento_inicio|date:"H:i" }} - {{ reserva.momento_fin|date:"H:i" }}
+                        </p>
+                        <div class="flex justify-between gap-2">
+                            <button 
+                                data-id="{{ reserva.id }}" 
+                                data-espacio="{{ reserva.espacio }}"
+                                data-fecha="{{ reserva.momento_inicio|date:'Y-m-d' }}"
+                                data-hora="{{ reserva.momento_inicio|date:'H' }}"
+                                class="editar-reserva-btn flex-1 text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
+                                Modificar
+                            </button>
+                            <button 
+                                data-id="{{ reserva.id }}" 
+                                class="eliminar-reserva-btn flex-1 text-white bg-red-500 hover:bg-red-600 font-medium rounded-lg text-sm px-3 py-2 transition-colors">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="flex flex-col items-center justify-center py-12 px-4">
+                    <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4h6m-6 0a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 01-2 2m-6 0v6a2 2 0 002 2h4a2 2 0 002-2v-6"></path>
+                    </svg>
+                    <p class="text-gray-600 text-center">No tienes reservas actualmente.<br>¡Haz tu primera reserva!</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Botón para desplazar hacia la derecha -->
+            <button id="scroll-right" class="hidden md:block bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 focus:outline-none ml-2 z-10 absolute right-0 transform -translate-y-1/2" style="top: 50%;">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- Sección de Crear/Editar Reserva -->
+    <section id="crear-editar-reserva" class="mb-10">
+        <h2 id="form-title" class="text-2xl font-semibold text-gray-800 mb-4">Hacer Nueva Reserva</h2>
+        
+        <!-- Pasos del proceso -->
+        <div class="mb-6">
+            <div class="flex items-center space-x-4">
+                <div id="step-1" class="flex items-center">
+                    <div class="flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full font-bold text-sm">1</div>
+                    <span class="ml-2 text-blue-500 font-medium">Elegir Deporte</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div id="step-2" class="flex items-center">
+                    <div class="flex items-center justify-center w-8 h-8 bg-gray-300 text-gray-600 rounded-full font-bold text-sm">2</div>
+                    <span class="ml-2 text-gray-600">Seleccionar Horario</span>
+                </div>
+                <div class="w-12 h-0.5 bg-gray-300"></div>
+                <div id="step-3" class="flex items-center">
+                    <div class="flex items-center justify-center w-8 h-8 bg-gray-300 text-gray-600 rounded-full font-bold text-sm">3</div>
+                    <span class="ml-2 text-gray-600">Confirmar</span>
+                </div>
+            </div>
+        </div>
+
+        <form id="reserva-form" class="bg-white p-6 rounded-lg shadow-md">
+            {% csrf_token %}
+            <input type="hidden" id="reserva-id" name="reserva-id" value="">
+            
+            <!-- Paso 1: Selección de Deporte -->
+            <div id="paso-1" class="step-content">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Paso 1: Selecciona tu deporte</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="deporte-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-colors" data-deporte="Fútbol">
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <path d="M8 12l2-2 2 2 4-4" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Fútbol</h4>
+                            <p class="text-sm text-gray-600 text-center">Campo de fútbol</p>
+                        </div>
+                    </div>
+                    
+                    <div class="deporte-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-colors" data-deporte="Baloncesto">
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Baloncesto</h4>
+                            <p class="text-sm text-gray-600 text-center">Cancha de baloncesto</p>
+                        </div>
+                    </div>
+                    
+                    <div class="deporte-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-colors" data-deporte="Padel">
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Pádel</h4>
+                            <p class="text-sm text-gray-600 text-center">Pista de pádel</p>
+                        </div>
+                    </div>
+                    
+                    <div class="deporte-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-colors" data-deporte="Piscina1">
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M2 12h20v8a2 2 0 01-2 2H4a2 2 0 01-2-2v-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Piscina 1</h4>
+                            <p class="text-sm text-gray-600 text-center">Piscina principal</p>
+                        </div>
+                    </div>
+                    
+                    <div class="deporte-option border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-colors" data-deporte="Piscina2">
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-cyan-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M2 12h20v8a2 2 0 01-2 2H4a2 2 0 01-2-2v-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Piscina 2</h4>
+                            <p class="text-sm text-gray-600 text-center">Piscina secundaria</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex justify-end">
+                    <button type="button" id="siguiente-paso-1" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
+                        Siguiente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Paso 2: Selección de Horario -->
+            <div id="paso-2" class="step-content hidden">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Paso 2: Selecciona la fecha y hora</h3>
+                
+                <!-- Selección de fecha -->
+                <div class="mb-6">
+                    <label for="fecha-reserva" class="block text-sm font-medium text-gray-700 mb-2">Fecha de la reserva</label>
+                    <input type="date" id="fecha-reserva" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Grid de horarios disponibles -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-gray-700 mb-3">Horarios disponibles (cada reserva dura 1 hora)</h4>
+                    <div id="horarios-grid" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        <!-- Los horarios se generarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button type="button" id="atras-paso-2" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                        Atrás
+                    </button>
+                    <button type="button" id="siguiente-paso-2" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
+                        Siguiente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Paso 3: Confirmación -->
+            <div id="paso-3" class="step-content hidden">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Paso 3: Confirma tu reserva</h3>
+                
+                <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-4">Resumen de tu reserva</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Deporte:</span>
+                            <span id="resumen-deporte" class="font-medium"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Fecha:</span>
+                            <span id="resumen-fecha" class="font-medium"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Horario:</span>
+                            <span id="resumen-horario" class="font-medium"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Duración:</span>
+                            <span class="font-medium">1 hora</span>
+                        </div>
+                        <hr class="my-3">
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button type="button" id="atras-paso-3" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                        Atrás
+                    </button>
+                    <button type="submit" id="confirmar-reserva" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                        <span id="texto-boton-confirmar">Confirmar Reserva</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+</div>
+
+<!-- Loading modal -->
+<div id="loading-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
+            <span class="text-gray-700">Procesando reserva...</span>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'nueva_gestion_reservas.js' %}"></script>
+{% endblock %}

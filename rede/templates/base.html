@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.0/flowbite.min.css" rel="stylesheet">
     <link rel="icon" href="{% static 'images/logo_ico.ico' %}" type="image/x-icon">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 flex flex-col min-h-screen">
     <!-- Navbar -->
     <nav class="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700">
         <div class="max-w-7xl flex flex-wrap items-center justify-between mx-auto px-4 py-4">
@@ -38,9 +38,9 @@
                     <li>
                         <a href="/" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Inicio</a>
                     </li>
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and not user.is_superuser %}
                     <li>
-                        <!-- Dropdown for Reservas -->
+                        <!-- Dropdown for Reservas (solo usuarios normales) -->
                         <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
                             Reservas
                             <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -52,12 +52,12 @@
                                 <li>
                                     <a href="/reservas" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mis reservas</a>
                                 </li>
-                                {% comment %} <li>
-                                    <a href="/reservas/activas" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reservas Activas</a>
+                                <li>
+                                    <a href="/reservas/hacer" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hacer reserva</a>
                                 </li>
                                 <li>
                                     <a href="/reservas/historial" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Historial</a>
-                                </li> {% endcomment %}
+                                </li>
                             </ul>
                         </div>
                     </li>
@@ -85,7 +85,7 @@
     </nav>
 
     <!-- Page Content -->
-    <main class="{% block main_classes %}mt-20{% endblock %}">
+    <main class="{% block main_classes %}mt-20 flex-1{% endblock %}">
         {% block content %}
         <!-- Aquí se insertará el contenido específico de cada página -->
         {% endblock %}
@@ -112,7 +112,7 @@
                 </ul>
             </div>
             <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-            <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2024 <a href="/" class="hover:underline">ReDe™</a>. Todos los derechos reservados.</span>
+            <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2025 <a href="/" class="hover:underline">ReDe™</a>. Todos los derechos reservados.</span>
         </div>
     </footer>
 
